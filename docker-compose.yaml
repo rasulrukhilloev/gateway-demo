@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   rabbitmq:
     image: rabbitmq:management
@@ -36,15 +36,22 @@ services:
     build: ./gateway
     volumes:
       - ./gateway:/usr/src/app
+      - gateway-node-modules:/usr/src/app/node_modules
     ports:
       - '3000:3000'
     depends_on:
       - rabbitmq
 
   auth:
-    build: ./auth
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - ./auth/.env
     volumes:
       - ./auth:/usr/src/app
+      - auth-node-modules:/usr/src/app/node_modules
     depends_on:
       - rabbitmq
       - postgres-auth
@@ -53,6 +60,7 @@ services:
     build: ./cards
     volumes:
       - ./cards:/usr/src/app
+      - cards-node-modules:/usr/src/app/node_modules
     depends_on:
       - rabbitmq
       - postgres-cards
@@ -61,3 +69,6 @@ volumes:
   postgres-auth:
   postgres-cards:
   rabbitmq-data:
+  gateway-node-modules:
+  cards-node-modules:
+  auth-node-modules:

@@ -4,7 +4,6 @@ WORKDIR /usr/src/app
 COPY --chown=node:node package*.json ./
 COPY prisma ./prisma/
 
-
 RUN npm install --force
 COPY --chown=node:node . .
 
