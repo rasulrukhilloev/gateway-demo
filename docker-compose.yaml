@@ -8,18 +8,16 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
-#  postgres-cards:
-#    container_name: postgres-cards
-#    image: postgres:13.5
-#    restart: always
-#    environment:
-#      - POSTGRES_USER=myuser
-#      - POSTGRES_PASSWORD=mypassword
-#      - POSTGRES_DB=auth
-#    volumes:
-#      - postgres-cards:/var/lib/postgresql/cards
-##    ports:
-##      - '5433:5432'
+  postgres-cards:
+    container_name: postgres-cards
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=cards
+    volumes:
+      - postgres-cards:/var/lib/postgresql/cards
 
   postgres-auth:
     container_name: postgres-auth
@@ -31,37 +29,61 @@ services:
       - POSTGRES_DB=auth
     volumes:
       - postgres-auth:/var/lib/postgresql/auth
-#    ports:
-#      - '5433:5432'
 
   gateway:
     build: ./gateway
-    volumes:
-      - ./gateway:/usr/src/app
-    ports:
-      - '3000:3000'
     depends_on:
       - rabbitmq
+#    volumes:
+#      - ./gateway:/usr/src/app
+#      - gateway-node-modules:/usr/src/app/node_modules
+    ports:
+      - '3000:3000'
 
   auth:
     build: ./auth
     env_file:
       - ./auth/.env
-#    volumes:
-#      - ./auth:/usr/src/app
     depends_on:
       - rabbitmq
       - postgres-auth
+#    volumes:
+#      - ./auth:/usr/src/app
+#      - auth-node-modules:/usr/src/app/node_modules
+    command: >
+      sh -c "
+      echo 'Waiting for postgres...';
+      while ! nc -z postgres-auth 5432; do
+        sleep 1;
+      done;
+      echo 'Postgres is up - executing migration for auth';
+      npx prisma migrate deploy && npm run start:dev
+      "
 
-#  cards:
-#    build: ./cards
+  cards:
+    build: ./cards
+    env_file:
+      - ./auth/.env
+    depends_on:
+      - rabbitmq
+      - postgres-cards
 #    volumes:
 #      - ./cards:/usr/src/app
-#    depends_on:
-#      - rabbitmq
-#      - postgres-cards
+#      - cards-node-modules:/usr/src/app/node_modules
+    command: >
+      sh -c "
+      echo 'Waiting for postgres...';
+      while ! nc -z postgres-auth 5432; do
+        sleep 1;
+      done;
+      echo 'Postgres is up - executing migrations for cards';
+      npx prisma migrate deploy && npm run start:dev
+      "
 
 volumes:
   postgres-auth:
 #  postgres-cards:
   rabbitmq-data:
+#  gateway-node-modules:
+#  cards-node-modules:
+#  auth-node-modules:
