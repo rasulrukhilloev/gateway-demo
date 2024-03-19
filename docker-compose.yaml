@@ -63,7 +63,7 @@ services:
   cards:
     build: ./cards
     env_file:
-      - ./auth/.env
+      - ./cards/.env
     depends_on:
       - rabbitmq
       - postgres-cards
