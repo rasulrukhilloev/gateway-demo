@@ -1,5 +1,5 @@
 import { Inject, Injectable, Req } from '@nestjs/common';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, throwError, timeout } from 'rxjs';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { AuthEntity } from './entities/auth.entity';
 import { LoginDto } from './dto/login.dto';
@@ -18,7 +18,7 @@ export class CardsService {
       ...cardsDto,
       userId,
     };
-    return this.cards_client.send('create-card', cardData);
+    return this.cards_client.send('create-card', cardData).pipe(timeout(12000));
   }
 
   getCards() {
