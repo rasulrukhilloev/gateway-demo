@@ -82,7 +82,7 @@ services:
 
 volumes:
   postgres-auth:
-#  postgres-cards:
+  postgres-cards:
   rabbitmq-data:
 #  gateway-node-modules:
 #  cards-node-modules:
