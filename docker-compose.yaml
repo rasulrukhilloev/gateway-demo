@@ -8,17 +8,18 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
-  postgres-cards:
-    container_name: postgres-cards
-    image: postgres:13.5
-    restart: always
-    environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=mypassword
-    volumes:
-      - postgres-cards:/var/lib/postgresql/cards
-#    ports:
-#      - '5433:5432'
+#  postgres-cards:
+#    container_name: postgres-cards
+#    image: postgres:13.5
+#    restart: always
+#    environment:
+#      - POSTGRES_USER=myuser
+#      - POSTGRES_PASSWORD=mypassword
+#      - POSTGRES_DB=auth
+#    volumes:
+#      - postgres-cards:/var/lib/postgresql/cards
+##    ports:
+##      - '5433:5432'
 
   postgres-auth:
     container_name: postgres-auth
@@ -27,6 +28,7 @@ services:
     environment:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=auth
     volumes:
       - postgres-auth:/var/lib/postgresql/auth
 #    ports:
@@ -43,21 +45,23 @@ services:
 
   auth:
     build: ./auth
-    volumes:
-      - ./auth:/usr/src/app
+    env_file:
+      - ./auth/.env
+#    volumes:
+#      - ./auth:/usr/src/app
     depends_on:
       - rabbitmq
       - postgres-auth
 
-  cards:
-    build: ./cards
-    volumes:
-      - ./cards:/usr/src/app
-    depends_on:
-      - rabbitmq
-      - postgres-cards
+#  cards:
+#    build: ./cards
+#    volumes:
+#      - ./cards:/usr/src/app
+#    depends_on:
+#      - rabbitmq
+#      - postgres-cards
 
 volumes:
   postgres-auth:
-  postgres-cards:
+#  postgres-cards:
   rabbitmq-data:
