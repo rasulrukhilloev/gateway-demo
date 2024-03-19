@@ -18,6 +18,8 @@ services:
       - POSTGRES_DB=cards
     volumes:
       - postgres-cards:/var/lib/postgresql/cards
+    ports:
+      - '5433:5432'
 
   postgres-auth:
     container_name: postgres-auth
@@ -29,6 +31,8 @@ services:
       - POSTGRES_DB=auth
     volumes:
       - postgres-auth:/var/lib/postgresql/auth
+    ports:
+      - '5432:5432'
 
   gateway:
     build: ./gateway

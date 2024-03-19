@@ -43,6 +43,13 @@ export class AppController {
     return this.cardsService.getCards();
   }
 
+  @Get('cards/status/:referenceId')
+  async checkCardCreationStatus(
+    @Param('referenceId') referenceId: string,
+  ): Promise<any> {
+    return this.cardsService.checkStatus(referenceId);
+  }
+
   // ------ USERS -----
 
   @Post('users')

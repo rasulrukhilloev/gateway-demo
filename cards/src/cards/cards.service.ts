@@ -6,9 +6,19 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CardsService {
   constructor(private prisma: PrismaService) {}
 
+  private statusStore = {}; //processing, ready, failed, unknown
+
   async create(createCardDto: CreateCardDto) {
+    const { referenceId, ...cardDto } = createCardDto;
+    this.statusStore[referenceId] = 'processing';
+
+    //sleep simulation
     await new Promise((resolve) => setTimeout(resolve, 10000));
-    return this.prisma.card.create({ data: createCardDto });
+
+    const res = await this.prisma.card.create({ data: cardDto });
+
+    this.statusStore[referenceId] = 'ready';
+    return;
   }
 
   findAll() {
@@ -21,5 +31,9 @@ export class CardsService {
 
   remove(id: number) {
     return this.prisma.card.delete({ where: { id: id } });
+  }
+
+  async checkStatus(referenceId: string): Promise<any> {
+    return this.statusStore[referenceId] || 'unknown';
   }
 }

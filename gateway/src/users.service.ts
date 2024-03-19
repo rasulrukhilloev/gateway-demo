@@ -1,10 +1,6 @@
-import { Inject, Injectable, Req } from '@nestjs/common';
-import { catchError, Observable, throwError } from 'rxjs';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { AuthEntity } from './entities/auth.entity';
-import { LoginDto } from './dto/login.dto';
-import { CreateCardDto } from './dto/create-card.dto';
-import { AuthService } from './auth.service';
+import { Inject, Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
