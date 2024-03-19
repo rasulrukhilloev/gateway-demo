@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3'
 services:
   rabbitmq:
     image: rabbitmq:management
@@ -15,6 +15,7 @@ services:
     environment:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=cards
     volumes:
       - postgres-cards:/var/lib/postgresql/cards
 #    ports:
@@ -27,6 +28,7 @@ services:
     environment:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=auth
     volumes:
       - postgres-auth:/var/lib/postgresql/auth
 #    ports:
@@ -43,18 +45,17 @@ services:
       - rabbitmq
 
   auth:
-    build:
-      context: ./auth
-      dockerfile: Dockerfile
-      target: development
+    build: ./auth
     env_file:
       - ./auth/.env
-    volumes:
-      - ./auth:/usr/src/app
-      - auth-node-modules:/usr/src/app/node_modules
     depends_on:
       - rabbitmq
       - postgres-auth
+#    volumes:
+#      - ./auth:/usr/src/app
+#      - auth-node-modules:/usr/src/app/node_modules
+#    command: npx prisma migrate deploy #CI/CD
+
 
   cards:
     build: ./cards
@@ -71,4 +72,4 @@ volumes:
   rabbitmq-data:
   gateway-node-modules:
   cards-node-modules:
-  auth-node-modules:
+#  auth-node-modules:
