@@ -60,7 +60,6 @@ services:
       npx prisma migrate deploy && npm run start:dev
       "
 
-
   cards:
     build: ./cards
     env_file:
@@ -83,7 +82,7 @@ services:
 
 volumes:
   postgres-auth:
-  postgres-cards:
+#  postgres-cards:
   rabbitmq-data:
 #  gateway-node-modules:
 #  cards-node-modules:
