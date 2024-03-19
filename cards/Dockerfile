@@ -1,4 +1,4 @@
-FROM node:18 as builder
+FROM node:18-alpine as builder
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -8,9 +8,9 @@ RUN npm install --force
 COPY . .
 
 
-FROM node:18 as development
+FROM node:18-alpine as development
 
-RUN apt-get update && apt install netcat-traditional
+RUN apk add --no-cache netcat-openbsd
 
 WORKDIR /usr/src/app
 COPY prisma ./prisma/
