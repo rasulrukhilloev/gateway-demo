@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CardsService {
   constructor(private prisma: PrismaService) {}
 
-  private statusStore = {}; //processing, ready, failed, unknown
+  private statusStore = {}; //processing, ready, failed, unknown //TODO use redis to store
 
   async create(createCardDto: CreateCardDto) {
     const { referenceId, ...cardDto } = createCardDto;

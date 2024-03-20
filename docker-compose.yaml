@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   rabbitmq:
     image: rabbitmq:management
@@ -35,25 +35,31 @@ services:
       - '5432:5432'
 
   gateway:
-    build: ./gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+      target: development
     depends_on:
       - rabbitmq
-#    volumes:
-#      - ./gateway:/usr/src/app
-#      - gateway-node-modules:/usr/src/app/node_modules
+    volumes:
+      - ./gateway:/usr/src/app
+      - gateway-node-modules:/usr/src/app/node_modules
     ports:
       - '3000:3000'
 
   auth:
-    build: ./auth
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: development
     env_file:
       - ./auth/.env
     depends_on:
       - rabbitmq
       - postgres-auth
-#    volumes:
-#      - ./auth:/usr/src/app
-#      - auth-node-modules:/usr/src/app/node_modules
+    volumes:
+      - ./auth:/usr/src/app
+      - auth-node-modules:/usr/src/app/node_modules
     command: >
       sh -c "
       echo 'Waiting for postgres...';
@@ -65,15 +71,18 @@ services:
       "
 
   cards:
-    build: ./cards
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+      target: development
     env_file:
       - ./cards/.env
     depends_on:
       - rabbitmq
       - postgres-cards
-#    volumes:
-#      - ./cards:/usr/src/app
-#      - cards-node-modules:/usr/src/app/node_modules
+    volumes:
+      - ./cards:/usr/src/app
+      - cards-node-modules:/usr/src/app/node_modules
     command: >
       sh -c "
       echo 'Waiting for postgres...';
@@ -88,6 +97,6 @@ volumes:
   postgres-auth:
   postgres-cards:
   rabbitmq-data:
-#  gateway-node-modules:
-#  cards-node-modules:
-#  auth-node-modules:
+  gateway-node-modules:
+  cards-node-modules:
+  auth-node-modules:
