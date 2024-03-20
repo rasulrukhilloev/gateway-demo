@@ -19,9 +19,8 @@ export class CardsService {
       userId,
       referenceId,
     };
-
     this.cards_client.emit('create-card', cardData); //.pipe(timeout(12000));
-    return referenceId;
+    return { referenceId };
   }
 
   getCards() {
