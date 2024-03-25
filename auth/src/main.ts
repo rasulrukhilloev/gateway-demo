@@ -11,6 +11,7 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
+        url: 'auth:50051',
         package: [AUTH_PACKAGE_NAME, USERS_PACKAGE_NAME],
         protoPath: [
           //__dirname,
