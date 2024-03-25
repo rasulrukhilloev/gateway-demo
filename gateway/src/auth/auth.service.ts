@@ -3,15 +3,16 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { AuthEntity } from '../entities/auth.entity';
 import { LoginDto } from './dto/login.dto';
-import { AUTH_SERVICE_NAME } from '../proto/auth';
+import { AUTH_SERVICE_NAME, AuthServiceClient } from '../proto/auth';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-  private authService; //TODO add type AuthServiceClient from proto
+  private authService: AuthServiceClient;
   constructor(@Inject('AUTH_SERVICE') private readonly client: ClientGrpc) {}
 
   onModuleInit() {
-    this.authService = this.client.getService(AUTH_SERVICE_NAME);
+    this.authService =
+      this.client.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
   }
   authenticate(token: AuthEntity): Observable<any> {
     //TODO add type AuthServiceClient from proto
