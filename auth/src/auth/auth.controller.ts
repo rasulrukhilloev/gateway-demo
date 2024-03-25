@@ -1,20 +1,24 @@
-import {Body, Controller, Post} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {LoginDto} from "./dto/login.dto";
-import {MessagePattern} from "@nestjs/microservices";
-import {AuthEntity} from "./entities/auth.entity";
+import { LoginDto } from './dto/login.dto';
+import { AuthEntity } from './entities/auth.entity';
+import {
+  AuthServiceController,
+  AuthServiceControllerMethods,
+} from '../proto/auth';
 
 @Controller('auth')
-export class AuthController {
+@AuthServiceControllerMethods()
+export class AuthController implements AuthServiceController {
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('login')
   async login(loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @MessagePattern('authenticate')
-  async validate(token: AuthEntity) {
+  async authenticate(token: AuthEntity) {
     return this.authService.validateToken(token);
   }
+
+  // @MessagePattern('refreshToken')
 }

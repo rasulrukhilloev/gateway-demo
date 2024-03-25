@@ -43,7 +43,7 @@ services:
       - rabbitmq
     volumes:
       - ./gateway:/usr/src/app
-      - gateway-node-modules:/usr/src/app/node_modules
+#      - gateway-node-modules:/usr/src/app/node_modules
     ports:
       - '3000:3000'
 
@@ -59,7 +59,7 @@ services:
       - postgres-auth
     volumes:
       - ./auth:/usr/src/app
-      - auth-node-modules:/usr/src/app/node_modules
+#      - auth-node-modules:/usr/src/app/node_modules
     command: >
       sh -c "
       echo 'Waiting for postgres...';
@@ -70,33 +70,33 @@ services:
       npx prisma migrate deploy && npm run start:dev
       "
 
-  cards:
-    build:
-      context: ./cards
-      dockerfile: Dockerfile
-      target: development
-    env_file:
-      - ./cards/.env
-    depends_on:
-      - rabbitmq
-      - postgres-cards
-    volumes:
-      - ./cards:/usr/src/app
-      - cards-node-modules:/usr/src/app/node_modules
-    command: >
-      sh -c "
-      echo 'Waiting for postgres...';
-      while ! nc -z postgres-auth 5432; do
-        sleep 1;
-      done;
-      echo 'Postgres is up - executing migrations for cards';
-      npx prisma migrate deploy && npm run start:dev
-      "
+#  cards:
+#    build:
+#      context: ./cards
+#      dockerfile: Dockerfile
+#      target: development
+#    env_file:
+#      - ./cards/.env
+#    depends_on:
+#      - rabbitmq
+#      - postgres-cards
+#    volumes:
+#      - ./cards:/usr/src/app
+##      - cards-node-modules:/usr/src/app/node_modules
+#    command: >
+#      sh -c "
+#      echo 'Waiting for postgres...';
+#      while ! nc -z postgres-auth 5432; do
+#        sleep 1;
+#      done;
+#      echo 'Postgres is up - executing migrations for cards';
+#      npx prisma migrate deploy && npm run start:dev
+#      "
 
 volumes:
   postgres-auth:
   postgres-cards:
   rabbitmq-data:
-  gateway-node-modules:
-  cards-node-modules:
-  auth-node-modules:
+#  gateway-node-modules:
+#  cards-node-modules:
+#  auth-node-modules:

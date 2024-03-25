@@ -7,7 +7,8 @@ import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entities/auth.entity';
 import { RpcException } from '@nestjs/microservices';
-import { jwtSecret } from './auth.module';
+import { LoginDto } from './dto/login.dto';
+import { TokenValidResult } from '../proto/auth';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateToken(token: AuthEntity): Promise<any> {
+  async validateToken(token: AuthEntity): Promise<TokenValidResult> {
     try {
       const decoded = this.jwtService.verify(
         token.accessToken,
@@ -30,15 +31,16 @@ export class AuthService {
     }
   }
 
-  async login({ email, password }): Promise<AuthEntity> {
-    const user = await this.prisma.user.findUnique({ where: { email: email } });
+  async login(loginDto: LoginDto): Promise<AuthEntity> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: loginDto.email },
+    });
     if (!user) {
       throw new RpcException(
-        new NotFoundException(`No user found for email: ${email}`),
+        new NotFoundException(`No user found for email: ${loginDto.email}`),
       );
     }
-    const isPasswordValid = user.password === password;
-    if (!isPasswordValid) {
+    if (!(user.password === loginDto.password)) {
       throw new RpcException(new UnauthorizedException('Invalid password'));
     }
     return {

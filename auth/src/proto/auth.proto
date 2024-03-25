@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package auth;
+
+
+service AuthService {
+  rpc Login (LoginDto) returns (AuthEntity);
+  rpc Authenticate (AuthEntity) returns (TokenValidResult);
+//  rpc RefreshToken() returns ();
+}
+
+message TokenValidResult {
+  bool isValid = 1;
+  optional DecodedToken decoded = 2;
+  optional string error = 3;
+}
+
+message DecodedToken {
+  int32 userId = 1;
+  int32 iat = 2;
+  int32 exp = 3;
+}
+
+message LoginDto {
+  string email = 1;
+  string password = 2;
+}
+
+message AuthEntity {
+  string accessToken = 1;
+}
+
+message Empty {}
+

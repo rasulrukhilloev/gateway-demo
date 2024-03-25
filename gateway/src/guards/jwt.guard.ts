@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import {map, Observable} from 'rxjs';
-import { AuthService } from '../auth.service';
-import {TokenValidationResult} from "../dto/token-validation.dto"; // Adjust the path as necessary
+import { map, Observable } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -18,7 +17,8 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     return this.authService.authenticate({ accessToken: token }).pipe(
-      map((authResult: TokenValidationResult) => {
+      map((authResult) => {
+        //TODO add type for result TokenValidationResult
         if (authResult.isValid) {
           request.user = authResult.decoded;
           return true;

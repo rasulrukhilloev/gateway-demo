@@ -2,24 +2,26 @@ import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import {
+  UsersServiceController,
+  UsersServiceControllerMethods,
+} from '../proto/users';
 
 @Controller('users')
-export class UsersController {
+@UsersServiceControllerMethods()
+export class UsersController implements UsersServiceController {
   constructor(private readonly usersService: UsersService) {}
 
-  @MessagePattern('create-user')
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @MessagePattern('get-user')
-  async get(id: string) {
-    return this.usersService.findOne(+id);
-  }
+  // async getUser(id: string) {
+  //   return this.usersService.findOne(+id);
+  // }
 
-  @MessagePattern('get-users')
-  async getAll() {
+  // @ts-ignore
+  async findAllUsers() {
     return this.usersService.findAll();
   }
 }
