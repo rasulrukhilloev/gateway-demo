@@ -17,12 +17,12 @@ export class CardsController {
   async getCards() {
     return this.cardsService.findAll();
   }
-
-  @MessagePattern('check-card-status')
-  async checkCardStatus(referenceId: string): Promise<any> {
-    const status = await this.cardsService.checkStatus(referenceId);
-    return { referenceId, status };
-  }
+  //
+  // @MessagePattern('check-card-status')
+  // async checkCardStatus(referenceId: string): Promise<any> {
+  //   const status = await this.cardsService.checkStatus(referenceId);
+  //   return { referenceId, status };
+  // }
 
   // @EventPattern()
 }

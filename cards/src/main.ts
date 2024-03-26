@@ -8,20 +8,24 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.RMQ,
+      // logger
+      transport: Transport.KAFKA,
       options: {
-        urls: ['amqp://rabbitmq:5672'],
-        // urls: ['amqp://localhost:5672'],
-        queue: 'cards_queue',
+        client: {
+          // clientId: 'cards',
+          brokers: ['kafka:29092'],
+        },
+        consumer: {
+          groupId: 'cards-consumer',
+        },
       },
     },
   );
 
-  app.useGlobalPipes(new ValidationPipe());
-
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
-
+  // app.useGlobalPipes(new ValidationPipe());
+  //
+  // const { httpAdapter } = app.get(HttpAdapterHost);
+  // app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   await app.listen();
 }
 

@@ -1,12 +1,37 @@
-version: '3.4'
+version: "3.4"
 services:
-  rabbitmq:
-    image: rabbitmq:management
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+#    networks:
+#      - broker-kafka
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+  kafka:
+    image: confluentinc/cp-kafka:latest
+#    networks:
+#      - broker-kafka
+    depends_on:
+      - zookeeper
     ports:
-      - '5672:5672'
-      - '15672:15672'
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+#    networks:
+#      - broker-kafka
+    depends_on:
+      - kafka
+    ports:
+      - 19000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
 
   postgres-cards:
     container_name: postgres-cards
@@ -20,7 +45,6 @@ services:
       - postgres-cards:/var/lib/postgresql/cards
     ports:
       - '5433:5432'
-
   postgres-auth:
     container_name: postgres-auth
     image: postgres:13.5
@@ -40,7 +64,7 @@ services:
       dockerfile: Dockerfile
       target: development
     depends_on:
-      - rabbitmq
+      - kafdrop
     volumes:
       - ./gateway:/usr/src/app
 #      - gateway-node-modules:/usr/src/app/node_modules
@@ -55,7 +79,7 @@ services:
     env_file:
       - ./auth/.env
     depends_on:
-      - rabbitmq
+      - kafdrop
       - postgres-auth
     volumes:
       - ./auth:/usr/src/app
@@ -70,33 +94,32 @@ services:
       npx prisma migrate deploy && npm run start:dev
       "
 
-#  cards:
-#    build:
-#      context: ./cards
-#      dockerfile: Dockerfile
-#      target: development
-#    env_file:
-#      - ./cards/.env
-#    depends_on:
-#      - rabbitmq
-#      - postgres-cards
-#    volumes:
-#      - ./cards:/usr/src/app
-##      - cards-node-modules:/usr/src/app/node_modules
-#    command: >
-#      sh -c "
-#      echo 'Waiting for postgres...';
-#      while ! nc -z postgres-auth 5432; do
-#        sleep 1;
-#      done;
-#      echo 'Postgres is up - executing migrations for cards';
-#      npx prisma migrate deploy && npm run start:dev
-#      "
+  cards:
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - ./cards/.env
+    depends_on:
+      - kafdrop
+      - postgres-cards
+    volumes:
+      - ./cards:/usr/src/app
+#      - cards-node-modules:/usr/src/app/node_modules
+    command: >
+      sh -c "
+      echo 'Waiting for postgres...';
+      while ! nc -z postgres-auth 5432; do
+        sleep 1;
+      done;
+      echo 'Postgres is up - executing migrations for cards';
+      npx prisma migrate deploy && npm run start:dev
+      "
 
 volumes:
   postgres-auth:
   postgres-cards:
-  rabbitmq-data:
 #  gateway-node-modules:
 #  cards-node-modules:
 #  auth-node-modules:

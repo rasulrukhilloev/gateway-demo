@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { AuthEntity } from './entities/auth.entity';
 import {
+  AuthEntity,
   AuthServiceController,
   AuthServiceControllerMethods,
 } from '../proto/auth';

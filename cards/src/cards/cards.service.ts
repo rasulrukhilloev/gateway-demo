@@ -8,17 +8,21 @@ export class CardsService {
 
   private statusStore = {}; //processing, ready, failed, unknown //TODO use redis to store
 
+  // async create(createCardDto: CreateCardDto) {
+  //   const { referenceId, ...cardDto } = createCardDto;
+  //   this.statusStore[referenceId] = 'processing';
+  //
+  //   //sleep simulation
+  //   await new Promise((resolve) => setTimeout(resolve, 10000));
+  //
+  //   const res = await this.prisma.card.create({ data: cardDto });
+  //
+  //   this.statusStore[referenceId] = 'ready';
+  //   return;
+  // }
+
   async create(createCardDto: CreateCardDto) {
-    const { referenceId, ...cardDto } = createCardDto;
-    this.statusStore[referenceId] = 'processing';
-
-    //sleep simulation
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-
-    const res = await this.prisma.card.create({ data: cardDto });
-
-    this.statusStore[referenceId] = 'ready';
-    return;
+    return this.prisma.card.create({ data: createCardDto });
   }
 
   findAll() {

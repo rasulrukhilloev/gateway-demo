@@ -5,10 +5,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { AuthEntity } from './entities/auth.entity';
 import { RpcException } from '@nestjs/microservices';
 import { LoginDto } from './dto/login.dto';
-import { TokenValidResult } from '../proto/auth';
+import { AuthEntity, TokenValidResult } from '../proto/auth';
 
 @Injectable()
 export class AuthService {
