@@ -10,6 +10,10 @@ export interface CreateUserDto {
   password: string;
 }
 
+export interface FindOneUserDto {
+  userId: number;
+}
+
 export interface UserById {
   id: number;
 }
@@ -36,17 +40,21 @@ export interface UsersServiceClient {
   createUser(request: CreateUserDto): Observable<User>;
 
   findAllUsers(request: Empty): Observable<UserList>;
+
+  findOneUser(request: FindOneUserDto): Observable<User>;
 }
 
 export interface UsersServiceController {
   createUser(request: CreateUserDto): Promise<User> | Observable<User> | User;
 
   findAllUsers(request: Empty): Promise<UserList> | Observable<UserList> | UserList;
+
+  findOneUser(request: FindOneUserDto): Promise<User> | Observable<User> | User;
 }
 
 export function UsersServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createUser", "findAllUsers"];
+    const grpcMethods: string[] = ["createUser", "findAllUsers", "findOneUser"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UsersService", method)(constructor.prototype[method], method, descriptor);

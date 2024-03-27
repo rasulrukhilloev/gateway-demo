@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth.service';
 import { TokenValidResult } from '../proto/auth';
 
 @Injectable()

@@ -7,7 +7,7 @@ import {
   AuthEntity,
   AuthServiceClient,
   TokenValidResult,
-} from '../proto/auth';
+} from './proto/auth';
 
 @Injectable()
 export class AuthService implements OnModuleInit {

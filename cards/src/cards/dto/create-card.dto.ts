@@ -17,7 +17,7 @@ export class CreateCardDto {
   @IsString()
   issueDate: string;
 
-  @IsNotEmpty()
-  @IsString()
-  referenceId: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // referenceId: string; //TODO sync with gateway
 }

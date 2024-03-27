@@ -2,21 +2,38 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { User, UserList } from '../proto/users';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = await this.prisma.user.create({ data: createUserDto });
+    return {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll(): Promise<UserList> {
+    const users = await this.prisma.user.findMany();
+    const users_reslt = users.map((user) => ({
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    }));
+    return { users: users_reslt };
   }
 
-  findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findOne(id: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    return {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -22,7 +22,7 @@ async function bootstrap() {
     },
   );
 
-  // app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe()); //TODO
   //
   // const { httpAdapter } = app.get(HttpAdapterHost);
   // app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
