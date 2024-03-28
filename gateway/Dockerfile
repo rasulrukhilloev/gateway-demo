@@ -1,29 +1,21 @@
-FROM node:18-alpine as development
+FROM node:18-alpine as builder
 
 WORKDIR usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --force
 
-COPY . .
 
-CMD ["npm", "run", "start:dev"]
-FROM node:18-alpine as production
-
-ARG NODE_ENV=production
-ENV NODE_ENV={NODE_ENV}
+FROM node:18-alpine as development
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-
-RUN npm install --prod
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY . .
 
 EXPOSE 3000
 
-COPY --from=development usr/src/app/dist ./dist
-
-CMD ["node", "dist/apps/payments/main"]
+CMD ["npm", "run", "start:dev"]
 
 #FROM node:18-alpine as production
