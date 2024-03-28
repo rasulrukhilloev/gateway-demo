@@ -1,27 +1,31 @@
-FROM node:18 as builder
-
-WORKDIR /usr/src/app
-COPY package*.json ./
-COPY prisma ./prisma/
-
-RUN npm install --force
-COPY . .
-
-
 FROM node:18 as development
 
 RUN apt-get update && apt install netcat-traditional
 
 WORKDIR /usr/src/app
+
 COPY prisma ./prisma/
 
 RUN npx prisma generate
 
 COPY package*.json ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+RUN npm install
+
 COPY . .
+#RUN npm run build
 
-#CMD ["npm", "run", "start:dev"]
+FROM node:18-alpine as production
 
+ARG NODE_ENV=production
+ENV NODE_ENV={NODE_ENV}
 
-#FROM node:18 as production
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --prod
+
+COPY --from=development usr/src/app/dist ./dist
+
+CMD ["node", "dist/apps/payments/main"]
