@@ -1,4 +1,4 @@
-Services: Gateway(forwards request to other services), Auth, Cards, Loan, Deposit./n
+Services: Gateway(forwards request to other services), Auth, Cards, Loan, Deposit.\n
 Each service has separate DB(Postgres)
 ORM: Prisma
 
