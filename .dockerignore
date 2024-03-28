@@ -1,4 +1,3 @@
-.dockerignore
 **/node_modules
 **/dist
 npm-debug.log
@@ -10,4 +9,4 @@ npm-debug.log
 .gitlab-*
 .github
 *.md
-.DS_Store
+**/DS_Store

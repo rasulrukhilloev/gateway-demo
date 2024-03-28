@@ -95,19 +95,6 @@ services:
     ports:
       - '5436:5432'
 
-  gateway:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
-      target: development
-    depends_on:
-      - kafdrop
-    volumes:
-      - ./gateway:/usr/src/app
-#      - gateway-node-modules:/usr/src/app/node_modules
-    ports:
-      - '3000:3000'
-
   auth:
     build:
       context: ./auth
@@ -194,6 +181,19 @@ services:
       echo 'Postgres is up - executing migration for deposit';
       npx prisma migrate deploy && npm run start:dev
       "
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+      target: prod
+    depends_on:
+      - kafdrop
+    volumes:
+      - ./gateway:/usr/src/app
+    #      - gateway-node-modules:/usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+
 
 volumes:
   postgres-auth:
