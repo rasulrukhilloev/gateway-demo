@@ -10,7 +10,6 @@ export class LoanController {
 
   @EventPattern('createLoan')
   async create(loanDto: CreateLoanDto) {
-    console.log(loanDto);
     return this.loanService.create(loanDto);
   }
 

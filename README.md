@@ -1,16 +1,17 @@
-Services: Gateway, Auth, Cards, Transaction.
-
-Communication between services is via RabbitMQ
-
-Authentication is with JWT
-DB: Postgres
+Services: Gateway(forwards request to other services), Auth, Cards, Loan, Deposit.
+Each service has separate DB(Postgres)
 ORM: Prisma
-Dockerized all services, containers are run via docker-compose
 
+
+Communication between Gateway and:
+Auth is via GRPC
+Cards is via Kafka
+Loan is via RabbitMQ
+Deposit is via NATS
+
+Authentication is with JWT(only access token is issued)
+Dockerized all services
 
 Endpoints:
-Gateway: signup, login, verifyUser,
-Auth: createUser, createToken, verifyToken
-Cards: getCardByUser, getCardsByUser, deleteCardByUser
-
-Transaction: getUserBalance, addUserBalance, removeUserBalance (with db transaction)
+Gateway: Login, CreateUser(not protected)
+CRUD for Users, Cards, Loan and Deposit

@@ -33,12 +33,10 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
 
-#  nats:
-#    image: nats
-#    ports:
-#      - "8222:8222"
-#    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222 "
-#    networks: [ "nats" ]
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
 
   rabbitmq:
     image: rabbitmq:management
@@ -84,6 +82,18 @@ services:
       - postgres-auth:/var/lib/postgresql/auth
     ports:
       - '5432:5432'
+  postgres-deposit:
+    container_name: postgres-deposit
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=deposit
+    volumes:
+      - postgres-deposit:/var/lib/postgresql/deposit
+    ports:
+      - '5436:5432'
 
   gateway:
     build:
@@ -163,12 +173,31 @@ services:
       echo 'Postgres is up - executing migrations for cards';
       npx prisma migrate deploy && npm run start:dev
       "
+  deposit:
+    build:
+      context: ./deposit
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - ./deposit/.env
+    depends_on:
+      - postgres-deposit
+    volumes:
+      - ./deposit:/usr/src/app
+    #      - deposit-node-modules:/usr/src/app/node_modules
+    command: >
+      sh -c "
+      echo 'Waiting for postgres...';
+      while ! nc -z postgres-deposit 5432; do
+        sleep 1;
+      done;
+      echo 'Postgres is up - executing migration for deposit';
+      npx prisma migrate deploy && npm run start:dev
+      "
 
 volumes:
   postgres-auth:
   postgres-cards:
   postgres-loan:
+  postgres-deposit:
   rabbitmq-data:
-#  gateway-node-modules:
-#  cards-node-modules:
-#  auth-node-modules:
