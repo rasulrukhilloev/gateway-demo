@@ -18,8 +18,3 @@ RUN npx prisma generate
 COPY package*.json ./
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY . .
-
-#CMD ["npm", "run", "start:dev"]
-
-
-#FROM node:18 as production

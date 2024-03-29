@@ -1,30 +1,21 @@
-FROM node:16-alpine AS build
-
+FROM node:16-alpine as base
 WORKDIR /usr/src/app
-
 COPY package*.json ./
+RUN npm install
 
-RUN npm i --production
-
-FROM build AS dev
-
+FROM base as build-prod
+WORKDIR /usr/src/app
 COPY . .
-
-RUN npm i
-
 RUN npm run build
-
-#RUN /usr/local/bin/node-prune
-
+RUN rm -rf node_modules
+RUN npm install --production
 
 FROM node:16-alpine as production
+WORKDIR /usr/src/app
+COPY --from=build-prod /usr/src/app/dist/ ./dist/
+COPY --from=build-prod /usr/src/app/node_modules ./node_modules
+CMD [ "node", "dist/main.js" ]
 
-COPY --from=build /usr/src/app/package.json ./
-
-COPY --from=dev /usr/src/app/dist/ ./dist/
-
-COPY --from=build /usr/src/app/node_modules/ ./node_modules/
-
-EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
+FROM base as dev
+COPY . .
+CMD ["npm", "run", "start:dev"]
