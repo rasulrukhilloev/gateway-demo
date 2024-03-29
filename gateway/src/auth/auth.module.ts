@@ -17,14 +17,14 @@ import { join } from 'path';
           url: 'auth:50051', //TODO env
           package: [AUTH_PACKAGE_NAME, USERS_PACKAGE_NAME],
           protoPath: [
-            //__dirname,
-            join('src/auth/proto/users.proto'),
-            join('src/auth/proto/auth.proto'),
+            join(__dirname, 'proto/users.proto'),
+            join(__dirname, 'proto/auth.proto'),
           ],
         },
       },
     ]),
   ],
+
   controllers: [AuthController],
   providers: [AuthService, UsersService],
   exports: [AuthService],

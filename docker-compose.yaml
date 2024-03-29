@@ -103,19 +103,13 @@ services:
     env_file:
       - ./auth/.env
     depends_on:
-      - kafdrop
       - postgres-auth
     volumes:
       - ./auth:/usr/src/app
 #      - auth-node-modules:/usr/src/app/node_modules
     command: >
       sh -c "
-      echo 'Waiting for postgres...';
-      while ! nc -z postgres-auth 5432; do
-        sleep 1;
-      done;
-      echo 'Postgres is up - executing migration for auth';
-      npx prisma migrate deploy && npm run start:dev
+      npx prisma migrate deploy && node dist/main.js
       "
   loan:
     build:
@@ -185,9 +179,11 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile
-      target: prod
+      target: production
     depends_on:
       - kafdrop
+      - rabbitmq
+      - nats
     volumes:
       - ./gateway:/usr/src/app
     #      - gateway-node-modules:/usr/src/app/node_modules

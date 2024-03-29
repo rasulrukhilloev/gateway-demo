@@ -1,29 +1,29 @@
-FROM node:16-alpine AS base
+FROM node:16-alpine AS build
 
-WORKDIR /app
+WORKDIR /usr/src/app
+
 COPY package*.json ./
+
 RUN npm i --production
 
-FROM base AS dev
+FROM build AS dev
 
 COPY . .
-RUN ls -l
 
 RUN npm i
 
 RUN npm run build
 
-# run node prune
 #RUN /usr/local/bin/node-prune
 
 
-FROM node:16-alpine as prod
+FROM node:16-alpine as production
 
-COPY --from=base /app/package.json ./
+COPY --from=build /usr/src/app/package.json ./
 
-COPY --from=dev /app/dist/ ./dist/
+COPY --from=dev /usr/src/app/dist/ ./dist/
 
-COPY --from=base /app/node_modules/ ./node_modules/
+COPY --from=build /usr/src/app/node_modules/ ./node_modules/
 
 EXPOSE 3000
 

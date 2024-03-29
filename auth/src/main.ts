@@ -14,9 +14,8 @@ async function bootstrap() {
         url: 'auth:50051', //TODO env
         package: [AUTH_PACKAGE_NAME, USERS_PACKAGE_NAME],
         protoPath: [
-          //__dirname,
-          join('src/proto/users.proto'),
-          join('src/proto/auth.proto'),
+          join(__dirname, 'proto/users.proto'),
+          join(__dirname, 'proto/auth.proto'),
         ],
       },
     },
