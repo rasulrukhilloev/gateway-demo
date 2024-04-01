@@ -5,9 +5,9 @@ RUN npm install
 
 FROM base as build-prod
 COPY . .
-RUN npm run build
-RUN rm -rf node_modules
-RUN npm install --production
+RUN npm run build && \
+    rm -rf node_modules && \
+    npm install --production
 
 FROM node:18.12.1-alpine3.16 as production
 WORKDIR /app

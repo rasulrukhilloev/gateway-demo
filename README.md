@@ -1,13 +1,14 @@
 Example Nestjs microservices with different transports(GRPC, Kafka, Rabbit, NATS)  
 
 1) TO INSTALL packages of all services, RUN:  
-If on windows, then npm run install:win  
-If on Mac/Linux, then npm run install:unix  
+"cd gateway-demo" then,  
+If on windows, then "npm run install:win"  
+If on Mac/Linux, then "npm run install:unix"  
   
 2) TO RUN containers:  
-docker compose up  
+"docker compose up"  
 
-Hot-reload is setup for dev mode(change variable MODE "dev" "production")  
+Hot-reload is setup for dev mode(change variable MODE to "dev", could be "production")  
 
 TODO:
 1) complete Auth, implement refresh-token

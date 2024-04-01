@@ -123,6 +123,7 @@ services:
       - ./loan/.env
     depends_on:
       - postgres-loan
+      - rabbitmq
     volumes:
       - ./loan:/usr/src/app
     <<: *migrate-start
