@@ -1,13 +1,13 @@
 FROM node:16-alpine as base
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 FROM base as build-prod
 COPY . .
-RUN npm run build
-RUN rm -rf node_modules
-RUN npm install --production
+RUN npm run build && \
+    rm -rf node_modules && \
+    npm ci --production
 
 FROM node:16-alpine as production
 WORKDIR /usr/src/app
