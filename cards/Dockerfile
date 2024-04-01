@@ -5,7 +5,7 @@ RUN npm ci
 
 FROM base as build-prod
 COPY . .
-COPY --from=base /usr/src/app ./node_modules
+COPY --from=base /usr/src/app/node_modules ./node_modules
 RUN npm run build && \
     rm -rf node_modules && \
     npm ci --production
