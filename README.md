@@ -1,3 +1,5 @@
+Example Nestjs microservices with different transports(GRPC, Kafka, Rabbit, NATS)  
+
 Services: Gateway(forwards request to other services), Auth, Cards, Loan, Deposit.  
 Each service has separate DB(Postgres)  
 ORM: Prisma  

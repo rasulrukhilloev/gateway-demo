@@ -58,142 +58,122 @@ services:
       - postgres-auth:/var/lib/postgresql/auth
     ports:
       - '5432:5432'
-#  postgres-loan:
-#    container_name: postgres-loan
-#    image: postgres:13.5
-#    restart: always
-#    environment:
-#      - POSTGRES_USER=myuser
-#      - POSTGRES_PASSWORD=mypassword
-#      - POSTGRES_DB=loan
-#    volumes:
-#      - postgres-loan:/var/lib/postgresql/loan
-#    ports:
-#      - '5434:5432'
-#  postgres-cards:
-#    container_name: postgres-cards
-#    image: postgres:13.5
-#    restart: always
-#    environment:
-#      - POSTGRES_USER=myuser
-#      - POSTGRES_PASSWORD=mypassword
-#      - POSTGRES_DB=cards
-#    volumes:
-#      - postgres-cards:/var/lib/postgresql/cards
-#    ports:
-#      - '5433:5432'
-#  postgres-deposit:
-#    container_name: postgres-deposit
-#    image: postgres:13.5
-#    restart: always
-#    environment:
-#      - POSTGRES_USER=myuser
-#      - POSTGRES_PASSWORD=mypassword
-#      - POSTGRES_DB=deposit
-#    volumes:
-#      - postgres-deposit:/var/lib/postgresql/deposit
-#    ports:
-#      - '5436:5432'
+  postgres-loan:
+    container_name: postgres-loan
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=loan
+    volumes:
+      - postgres-loan:/var/lib/postgresql/loan
+    ports:
+      - '5434:5432'
+  postgres-cards:
+    container_name: postgres-cards
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=cards
+    volumes:
+      - postgres-cards:/var/lib/postgresql/cards
+    ports:
+      - '5433:5432'
+  postgres-deposit:
+    container_name: postgres-deposit
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=deposit
+    volumes:
+      - postgres-deposit:/var/lib/postgresql/deposit
+    ports:
+      - '5436:5432'
 
   auth:
     build:
       context: ./auth
       dockerfile: Dockerfile
-      target: development
+      target: dev #production
     env_file:
       - ./auth/.env
     depends_on:
       - postgres-auth
     volumes:
       - ./auth:/usr/src/app
-#      - auth-node-modules:/usr/src/app/node_modules
     command: >
       sh -c "
-      npx prisma migrate deploy && node dist/main.js
-      "
-#  loan:
-#    build:
-#      context: ./loan
-#      dockerfile: Dockerfile
-#      target: development
-#    env_file:
-#      - ./loan/.env
-#    depends_on:
-#      - postgres-loan
-#    volumes:
-#      - ./loan:/usr/src/app
-#    #      - loan-node-modules:/usr/src/app/node_modules
-#    command: >
-#      sh -c "
-#      echo 'Waiting for postgres...';
-#      while ! nc -z postgres-loan 5432; do
-#        sleep 1;
-#      done;
-#      echo 'Postgres is up - executing migration for loan';
-#      npx prisma migrate deploy && npm run start:dev
-#      "
-#  cards:
-#    build:
-#      context: ./cards
-#      dockerfile: Dockerfile
-#      target: development
-#    env_file:
-#      - ./cards/.env
-#    depends_on:
-#      - kafdrop
-#      - postgres-cards
-#    volumes:
-#      - ./cards:/usr/src/app
-##      - cards-node-modules:/usr/src/app/node_modules
-#    command: >
-#      sh -c "
-#      echo 'Waiting for postgres...';
-#      while ! nc -z postgres-cards 5432; do
-#        sleep 1;
-#      done;
-#      echo 'Postgres is up - executing migrations for cards';
-#      npx prisma migrate deploy && npm run start:dev
-#      "
-#  deposit:
-#    build:
-#      context: ./deposit
-#      dockerfile: Dockerfile
-#      target: development
-#    env_file:
-#      - ./deposit/.env
-#    depends_on:
-#      - postgres-deposit
-#    volumes:
-#      - ./deposit:/usr/src/app
-#    #      - deposit-node-modules:/usr/src/app/node_modules
-#    command: >
-#      sh -c "
-#      echo 'Waiting for postgres...';
-#      while ! nc -z postgres-deposit 5432; do
-#        sleep 1;
-#      done;
-#      echo 'Postgres is up - executing migration for deposit';
-#      npx prisma migrate deploy && npm run start:dev
-#      "
+      npx prisma migrate deploy && npm run start:dev"
+#      node dist/main.js
+  loan:
+    build:
+      context: ./loan
+      dockerfile: Dockerfile
+      target: dev #production
+    env_file:
+      - ./loan/.env
+    depends_on:
+      - postgres-loan
+    volumes:
+      - ./loan:/usr/src/app
+    command: >
+      sh -c "
+      npx prisma migrate deploy && npm run start:dev"
+#      node dist/main.js
+  cards:
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+      target: dev #production
+    env_file:
+      - ./cards/.env
+    depends_on:
+      - kafdrop
+      - postgres-cards
+    volumes:
+      - ./cards:/usr/src/app
+    command: >
+      sh -c "
+      npx prisma migrate deploy && npm run start:dev"
+#      node dist/main.js
+  deposit:
+    build:
+      context: ./deposit
+      dockerfile: Dockerfile
+      target: dev #production
+    env_file:
+      - ./deposit/.env
+    depends_on:
+      - postgres-deposit
+    volumes:
+      - ./deposit:/usr/src/app
+    command: >
+      sh -c "
+      npx prisma migrate deploy && npm run start:dev"
+#      node dist/main.js
   gateway:
     build:
       context: ./gateway
       dockerfile: Dockerfile
-      target: production
+      target: dev #production
     depends_on:
       - kafdrop
       - rabbitmq
       - nats
     volumes:
       - ./gateway:/usr/src/app
-    #      - gateway-node-modules:/usr/src/app/node_modules
     ports:
       - '3000:3000'
 
 
 volumes:
   postgres-auth:
-#  postgres-cards:
-#  postgres-loan:
-#  postgres-deposit:
+  postgres-cards:
+  postgres-loan:
+  postgres-deposit:
   rabbitmq-data:

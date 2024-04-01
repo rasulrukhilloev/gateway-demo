@@ -4,7 +4,6 @@ COPY package*.json ./
 RUN npm install
 
 FROM base as build-prod
-WORKDIR /usr/src/app
 COPY . .
 RUN npm run build
 RUN rm -rf node_modules
