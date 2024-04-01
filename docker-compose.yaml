@@ -1,4 +1,10 @@
 version: "3.4"
+
+x-common-command: &migrate-start
+  command: >
+    sh -c "npx prisma migrate deploy && if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -106,8 +112,7 @@ services:
       - postgres-auth
     volumes:
       - ./auth:/usr/src/app
-    command: >
-      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+    <<: *migrate-start
 
   loan:
     build:
@@ -120,8 +125,8 @@ services:
       - postgres-loan
     volumes:
       - ./loan:/usr/src/app
-    command: >
-      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+    <<: *migrate-start
+
 
   cards:
     build:
@@ -135,8 +140,8 @@ services:
       - postgres-cards
     volumes:
       - ./cards:/usr/src/app
-    command: >
-      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+    <<: *migrate-start
+
 
   deposit:
     build:
@@ -149,8 +154,8 @@ services:
       - postgres-deposit
     volumes:
       - ./deposit:/usr/src/app
-    command: >
-      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+    <<: *migrate-start
+
 
   gateway:
     build:

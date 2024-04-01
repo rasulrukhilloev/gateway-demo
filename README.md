@@ -9,6 +9,17 @@ docker compose up
 
 Hot-reload is setup for dev mode(change variable MODE "dev" "production")  
 
+TODO:
+1) complete Auth, implement refresh-token
+2) complete crud(getOne, remove, update all by user)
+3) Handle exceptions
+4) Handle Validation via Pipes
+5) Filter incoming data
+6) Health checks of each services
+7) Unit, Integration, end2end tests
+8) Logging solution
+9) Optimize duplicates by creating a module
+
 Services: Gateway(forwards request to other services), Auth, Cards, Loan, Deposit.  
 Each service has separate DB(Postgres)  
 ORM: Prisma
@@ -24,9 +35,4 @@ Dockerized all services
   
 Endpoints:  
 Gateway: Login, CreateUser(not protected for convenience)  
-CRUD for Users, Cards, Loan and Deposit  
-
-TODO:
-
-1) complete Auth, implement refresh-token
-2) complete crud(getOne, remove, update all by user)
+CRUD for Users, Cards, Loan and Deposit
