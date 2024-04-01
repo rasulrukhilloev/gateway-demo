@@ -1,0 +1,13 @@
+{
+  "name": "microservices",
+  "version": "1.0.0",
+  "description": "Example Nestjs microservices with different transports(GRPC, Kafka, Rabbit, NATS)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install:unix": "for dir in */; do if [ -e \\\"$dir/package.json\\\" ]; then echo \\\"Installing in $dir\\\" && cd \\\"$dir\\\" && npm install && npx prisma generate && cd ..; fi; done",
+    "install:win": "PowerShell -Command \"Get-ChildItem -Directory | ForEach-Object { if (Test-Path $_\\package.json) { Write-Output 'Installing in ' $_.FullName; Set-Location $_; npm install; npx prisma generate; Set-Location .. } }\""
+  },
+  "author": "",
+  "license": "ISC"
+}
