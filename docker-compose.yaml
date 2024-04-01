@@ -99,7 +99,7 @@ services:
     build:
       context: ./auth
       dockerfile: Dockerfile
-      target: dev #production
+      target: ${MODE}
     env_file:
       - ./auth/.env
     depends_on:
@@ -107,14 +107,13 @@ services:
     volumes:
       - ./auth:/usr/src/app
     command: >
-      sh -c "
-      npx prisma migrate deploy && npm run start:dev"
-#      node dist/main.js
+      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
   loan:
     build:
       context: ./loan
       dockerfile: Dockerfile
-      target: dev #production
+      target: ${MODE}
     env_file:
       - ./loan/.env
     depends_on:
@@ -122,14 +121,13 @@ services:
     volumes:
       - ./loan:/usr/src/app
     command: >
-      sh -c "
-      npx prisma migrate deploy && npm run start:dev"
-#      node dist/main.js
+      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
   cards:
     build:
       context: ./cards
       dockerfile: Dockerfile
-      target: dev #production
+      target: ${MODE}
     env_file:
       - ./cards/.env
     depends_on:
@@ -138,14 +136,13 @@ services:
     volumes:
       - ./cards:/usr/src/app
     command: >
-      sh -c "
-      npx prisma migrate deploy && npm run start:dev"
-#      node dist/main.js
+      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
   deposit:
     build:
       context: ./deposit
       dockerfile: Dockerfile
-      target: dev #production
+      target: ${MODE}
     env_file:
       - ./deposit/.env
     depends_on:
@@ -153,14 +150,13 @@ services:
     volumes:
       - ./deposit:/usr/src/app
     command: >
-      sh -c "
-      npx prisma migrate deploy && npm run start:dev"
-#      node dist/main.js
+      sh -c "if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
   gateway:
     build:
       context: ./gateway
       dockerfile: Dockerfile
-      target: dev #production
+      target: ${MODE}
     depends_on:
       - kafdrop
       - rabbitmq
