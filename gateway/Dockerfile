@@ -1,21 +1,20 @@
-FROM node:18-alpine as builder
-
-WORKDIR usr/src/app
-
-COPY package*.json ./
-
-RUN npm install --force
-
-
-FROM node:18-alpine as development
-
+FROM node:16-alpine as base
 WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
 
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+FROM base as build-prod
 COPY . .
+RUN npm run build
+RUN rm -rf node_modules
+RUN npm install --production
 
-EXPOSE 3000
+FROM node:16-alpine as production
+WORKDIR /usr/src/app
+COPY --from=build-prod /usr/src/app/dist/ ./dist/
+COPY --from=build-prod /usr/src/app/node_modules ./node_modules
+CMD [ "node", "dist/main.js" ]
 
+FROM base as dev
+COPY . .
 CMD ["npm", "run", "start:dev"]
-
-#FROM node:18-alpine as production
