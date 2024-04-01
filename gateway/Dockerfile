@@ -5,13 +5,12 @@ RUN npm ci
 
 FROM base as build-prod
 COPY . .
-COPY --from=base /usr/src/app/node_modules ./node_modules
 RUN npm run build && \
     rm -rf node_modules && \
     npm ci --production
 
 FROM node:16-alpine as production
-WORKDIR /usr/src/app
+WORKDIR /app
 COPY --from=build-prod /usr/src/app/dist/ ./dist/
 COPY --from=build-prod /usr/src/app/node_modules ./node_modules
 CMD [ "node", "dist/main.js" ]
