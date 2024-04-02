@@ -1,0 +1,181 @@
+version: "3.4"
+
+x-common-command: &migrate-start
+  command: >
+    sh -c "npx prisma migrate deploy && if [ '${MODE}' = 'dev' ]; then npm run start:dev; else node dist/main.js; fi"
+
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+#    networks:
+#      - broker-kafka
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+  kafka:
+    image: confluentinc/cp-kafka:latest
+#    networks:
+#      - broker-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+#    networks:
+#      - broker-kafka
+    depends_on:
+      - kafka
+    ports:
+      - 19000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  postgres-auth:
+    container_name: postgres-auth
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=auth
+    volumes:
+      - postgres-auth:/var/lib/postgresql/auth
+    ports:
+      - '5432:5432'
+  postgres-loan:
+    container_name: postgres-loan
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=loan
+    volumes:
+      - postgres-loan:/var/lib/postgresql/loan
+    ports:
+      - '5434:5432'
+  postgres-cards:
+    container_name: postgres-cards
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=cards
+    volumes:
+      - postgres-cards:/var/lib/postgresql/cards
+    ports:
+      - '5433:5432'
+  postgres-deposit:
+    container_name: postgres-deposit
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=deposit
+    volumes:
+      - postgres-deposit:/var/lib/postgresql/deposit
+    ports:
+      - '5436:5432'
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      target: ${MODE}
+    env_file:
+      - ./auth/.env
+    depends_on:
+      - postgres-auth
+    volumes:
+      - ./auth:/usr/src/app
+    <<: *migrate-start
+
+  loan:
+    build:
+      context: ./loan
+      dockerfile: Dockerfile
+      target: ${MODE}
+    env_file:
+      - ./loan/.env
+    depends_on:
+      - postgres-loan
+      - rabbitmq
+    volumes:
+      - ./loan:/usr/src/app
+    <<: *migrate-start
+
+
+  cards:
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+      target: ${MODE}
+    env_file:
+      - ./cards/.env
+    depends_on:
+      - kafdrop
+      - postgres-cards
+    volumes:
+      - ./cards:/usr/src/app
+    <<: *migrate-start
+
+
+  deposit:
+    build:
+      context: ./deposit
+      dockerfile: Dockerfile
+      target: ${MODE}
+    env_file:
+      - ./deposit/.env
+    depends_on:
+      - postgres-deposit
+    volumes:
+      - ./deposit:/usr/src/app
+    <<: *migrate-start
+
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+      target: ${MODE}
+    depends_on:
+      - kafdrop
+      - rabbitmq
+      - nats
+    volumes:
+      - ./gateway:/usr/src/app
+    ports:
+      - '3000:3000'
+
+
+volumes:
+  postgres-auth:
+  postgres-cards:
+  postgres-loan:
+  postgres-deposit:
+  rabbitmq-data:
