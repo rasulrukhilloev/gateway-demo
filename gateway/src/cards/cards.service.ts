@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { lastValueFrom, Observable, Subscription } from 'rxjs';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateCardDto } from './dto/create-card.dto';
 import { uuid } from 'uuidv4';
 
 @Injectable()
 export class CardsService {
   constructor(
-    @Inject('CARDS_SERVICE') private readonly cardsClient: ClientKafka,
+    @Inject('CARDS_SERVICE') private readonly cardsClient: ClientProxy//ClientKafka,
   ) {}
 
   // create(cardsDto: CreateCardDto, userId: number) {

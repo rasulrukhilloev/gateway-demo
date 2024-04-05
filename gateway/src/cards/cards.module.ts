@@ -11,14 +11,21 @@ import { AuthModule } from '../auth/auth.module';
         name: 'CARDS_SERVICE',
         transport: Transport.KAFKA,
         options: {
-          client: {
-            clientId: 'cards',
-            brokers: ['kafka:29092'],
-          },
-          consumer: {
-            groupId: 'cards-consumer',
-          },
+          urls: ['amqp://rabbitmq:5672'], //TODO env
+          queue: 'cards_queue',
+          // queueOptions: {
+          //   durable: false // queue is lost upon restart
+          // },
         },
+        // options: {
+        //   client: {
+        //     clientId: 'cards',
+        //     brokers: ['kafka:29092'],
+        //   },
+        //   consumer: {
+        //     groupId: 'cards-consumer',
+        //   },
+        // },
       },
     ]),
     AuthModule,

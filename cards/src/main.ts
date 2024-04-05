@@ -9,15 +9,23 @@ async function bootstrap() {
     AppModule,
     {
       // logger
-      transport: Transport.KAFKA,
+      transport: Transport.RMQ,
       options: {
-        client: {
-          // clientId: 'cards',
-          brokers: ['kafka:29092'],
-        },
-        consumer: {
-          groupId: 'cards-consumer',
-        },
+          urls: ['amqp://rabbitmq:5672'],
+          queue: 'cards_queue',
+          // queueOptions: {
+          //   durable: false,
+          // },
+      },
+      // transport: Transport.KAFKA,
+      // options: {
+      //   client: {
+      //     // clientId: 'cards',
+      //     brokers: ['kafka:29092'],
+      //   },
+      //   consumer: {
+      //     groupId: 'cards-consumer',
+      //   },
       },
     },
   );

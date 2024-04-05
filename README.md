@@ -27,7 +27,7 @@ ORM: Prisma
 
 Communication between Gateway and:  
 Auth is via GRPC  
-Cards is via Kafka  
+Cards is via ~~Kafka~~ RabbitMQ  
 Loan is via RabbitMQ  
 Deposit is via NATS  
 
